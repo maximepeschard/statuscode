@@ -15,17 +15,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func main() {
-	var err error
+const defaultPort string = "8080"
 
+func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Warn().Msg("no $PORT, using default port")
-		port = "8080"
+		port = defaultPort
 	}
 
-	err = status.Init("data.toml")
-	if err != nil {
+	if err := status.Init("data.toml"); err != nil {
 		log.Fatal().Err(err).Msg("failed to initialize")
 	}
 
@@ -41,7 +40,7 @@ func main() {
 
 	// Server runs in a goroutine so that it does not block.
 	go func() {
-	log.Info().Str("addr", server.Addr).Msg("starting server")
+		log.Info().Str("addr", server.Addr).Msg("starting server")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().Err(err).Send()
 		}
