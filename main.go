@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/maximepeschard/statuscode/handler"
@@ -28,8 +29,11 @@ func main() {
 	router := routes()
 	router.Use(middleware.Logging)
 	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
+		Addr:         ":" + port,
+		Handler:      router,
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
 	}
 
 	log.Info().Str("addr", server.Addr).Msg("starting server")
